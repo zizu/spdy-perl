@@ -1,0 +1,100 @@
+diff -uNr Net-SSLeay-1.36/SSLeay.xs Net/SSLeay.xs
+--- Net-SSLeay-1.36/SSLeay.xs	2010-01-31 01:34:13.000000000 +0500
++++ Net/SSLeay.xs	2011-09-20 00:03:13.158439001 +0600
+@@ -698,6 +698,58 @@
+ 	}
+ }
+ 
++# ifndef OPENSSL_NO_NEXTPROTONEG
++
++typedef struct tlsextnextprotoctx_st {
++	unsigned char *data;
++	unsigned short len;
++	int status;
++} tlsextnextprotoctx;
++
++static tlsextnextprotoctx next_proto;
++
++int next_proto_cb(SSL *s, unsigned char **out, unsigned char *outlen, const unsigned char *in, unsigned int inlen, void *arg)
++	{
++	tlsextnextprotoctx *ctx = arg;
++	ctx->status = SSL_select_next_proto(out, outlen, in, inlen, ctx->data, ctx->len);
++	return SSL_TLSEXT_ERR_OK;
++	}
++
++unsigned char *next_protos_parse(unsigned short *outlen, const char *in)
++	{
++	size_t len;
++	unsigned char *out;
++	size_t i, start = 0;
++
++	len = strlen(in);
++	if (len >= 65535)
++		return NULL;
++
++	out = OPENSSL_malloc(strlen(in) + 1);
++	if (!out)
++		return NULL;
++
++	for (i = 0; i <= len; ++i)
++		{
++		if (i == len || in[i] == ',')
++			{
++			if (i - start > 255)
++				{
++				OPENSSL_free(out);
++				return NULL;
++				}
++			out[start] = i - start;
++			start = i + 1;
++			}
++		else
++			out[i+1] = in[i];
++		}
++
++	*outlen = len + 1;
++	return out;
++	}
++
++#endif
+ 
+ MODULE = Net::SSLeay		PACKAGE = Net::SSLeay          PREFIX = SSL_
+ 
+@@ -2722,6 +2774,37 @@
+ 
+ #endif
+ 
++#ifndef OPENSSL_NO_NEXTPROTONEG
++
++void
++SSL_CTX_set_next_proto(proto)
++    char *proto
++    CODE:
++    next_proto.data = next_protos_parse(&next_proto.len, proto);
++
++void
++SSL_CTX_set_next_proto_select_cb(ctx);
++    SSL_CTX *ctx
++    CODE: 
++    if(ctx != NULL && next_proto.data)
++        SSL_CTX_set_next_proto_select_cb(ctx, next_proto_cb, &next_proto);
++
++char *
++SSL_get0_next_proto_negotiated(ssl)
++    SSL *ssl 
++    PREINIT:
++    const unsigned char *proto;
++	unsigned int proto_len;
++    CODE:
++    if(next_proto.status != -1) {
++	    SSL_get0_next_proto_negotiated(ssl, &proto, &proto_len);
++        RETVAL = strndup(proto, proto_len);
++    }
++    OUTPUT:
++    RETVAL
++
++#endif
++
+ #if defined(SSL_F_SSL_SET_HELLO_EXTENSION) || defined(SSL_F_SSL_SET_SESSION_TICKET_EXT)
+ 
+ void 
