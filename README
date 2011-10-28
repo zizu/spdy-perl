@@ -1,18 +1,21 @@
-# SPDY Client
+SPDY Client
 
 Simple client for testing experimental SPDY protocol. Client can asynchronously process HTTP queries and return results.
 
-## Install HOWTO:
+Install HOWTO:
 
 Firstly you need OpenSSL lib with NPN extension. Currently there is no stable build with it. So go to [OpenSSL ftp](ftp://ftp.openssl.org/snapshot) and get the latest snapshot with name openssl-SNAP-current_date.tar.gz . 
 Use ./Configure and ./config (try to read READMY and INSTALL files if you need non-default parameters). Then use make to compile and make install to install.
 
 Now you need to patch Net::SSLeay for NPN. Download Net::SSLeay from CPAN:
     wget http://search.cpan.org/CPAN/authors/id/M/MI/MIKEM/Net-SSLeay-1.42.tar.gz
+
 Extract archive:
     tar -xf Net-SSLeay-1.42.tar.gz
+
 Apply patch
     patch -p0 < nextproto.patch
+
 Configure, compile and install:
     perl Makefile.PL
     make
