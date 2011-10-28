@@ -1,11 +1,11 @@
-diff -uNr Net-SSLeay-1.36/SSLeay.xs Net/SSLeay.xs
---- Net-SSLeay-1.36/SSLeay.xs	2010-01-31 01:34:13.000000000 +0500
-+++ Net/SSLeay.xs	2011-09-20 00:03:13.158439001 +0600
-@@ -698,6 +698,58 @@
+diff -rupN Net-SSLeay-1.42/SSLeay.xs Net-SSLeay-NPN-1.42/SSLeay.xs
+--- Net-SSLeay-1.42/SSLeay.xs	2011-10-03 12:24:48.000000000 +0600
++++ Net-SSLeay-NPN-1.42/SSLeay.xs	2011-10-28 05:10:53.530232002 +0600
+@@ -644,6 +644,59 @@ ssleay_RSA_generate_key_cb_invoke(int i,
  	}
  }
  
-+# ifndef OPENSSL_NO_NEXTPROTONEG
++#ifndef OPENSSL_NO_NEXTPROTONEG
 +
 +typedef struct tlsextnextprotoctx_st {
 +	unsigned char *data;
@@ -57,10 +57,11 @@ diff -uNr Net-SSLeay-1.36/SSLeay.xs Net/SSLeay.xs
 +	}
 +
 +#endif
++
  
  MODULE = Net::SSLeay		PACKAGE = Net::SSLeay          PREFIX = SSL_
  
-@@ -2722,6 +2774,37 @@
+@@ -2848,6 +2901,36 @@ SSL_set1_param(ctx, vpm)
  
  #endif
  
@@ -94,7 +95,6 @@ diff -uNr Net-SSLeay-1.36/SSLeay.xs Net/SSLeay.xs
 +    RETVAL
 +
 +#endif
-+
- #if defined(SSL_F_SSL_SET_HELLO_EXTENSION) || defined(SSL_F_SSL_SET_SESSION_TICKET_EXT)
+ #if OPENSSL_VERSION_NUMBER >= 0x0090800fL
  
- void 
+ X509_VERIFY_PARAM *
