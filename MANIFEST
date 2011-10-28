@@ -1,0 +1,9 @@
+example.pl
+Makefile.PL
+MANIFEST
+nextproto.patch
+README
+lib/SPDY/Client.pm
+lib/SPDY/Protocol.pm
+perf_tests/test1.pl
+perf_tests/test2.pl
