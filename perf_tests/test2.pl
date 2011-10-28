@@ -9,7 +9,6 @@ use threads ('exit' => 'threads_only');
 use Thread::Queue;
 use HTML::LinkExtor;
 use URI;
-use lib '../';
 use SPDY::Client;
 
 $\ = $/;

@@ -21,6 +21,6 @@ if($resp->is_success) {
    print $resp->decoded_content();
 }
 else {
-    print %$resp;
+    print STDERR $response->status_line, "\n";
 }
 $client->close;

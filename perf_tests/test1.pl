@@ -7,7 +7,6 @@ use Time::HiRes qw(sleep time);
 use Net::SSLeay qw(get_https);
 use threads;
 use Thread::Queue;
-use lib '../';
 use SPDY::Client;
 
 $\ = $/;
